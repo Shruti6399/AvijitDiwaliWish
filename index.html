@@ -1,0 +1,852 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Happy Diwali — Greetings from Avijit Raj Khare</title>
+  
+  <!-- Tailwind CSS -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  
+  <!-- Google Fonts: Cormorant Garamond, Cinzel & Outfit -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;600;700;800&family=Cormorant+Garamond:ital,wght@0,400;0,600;0,700;1,400;1,600&family=Outfit:wght@300;400;500;600&display=swap" rel="stylesheet">
+  
+  <!-- FontAwesome Icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  
+  <!-- Canvas Confetti for celebratory bursts -->
+  <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.9.2/dist/confetti.browser.min.js"></script>
+
+  <style>
+    body {
+      font-family: 'Outfit', sans-serif;
+      background-color: #030712;
+      color: #FDF4E3;
+      overflow-x: hidden;
+      user-select: none;
+    }
+
+    .font-cinzel { font-family: 'Cinzel', serif; }
+    .font-serif-luxury { font-family: 'Cormorant Garamond', Georgia, serif; }
+
+    /* Royal Deep Midnight & Rangoli background */
+    .festive-bg {
+      background: 
+        radial-gradient(circle at 50% 15%, rgba(45, 23, 85, 0.5) 0%, rgba(9, 16, 38, 0.85) 45%, #030712 100%),
+        url("data:image/svg+xml,%3Csvg width='80' height='80' viewBox='0 0 80 80' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='%23d4af37' fill-opacity='0.035'%3E%3Cpath d='M40 0 L45 25 L70 30 L48 45 L55 70 L38 52 L20 70 L28 45 L5 30 L32 25 Z' /%3E%3Ccircle cx='40' cy='40' r='10' stroke='%23d4af37' stroke-opacity='0.04' fill='none'/%3E%3C/g%3E%3C/svg%3E");
+    }
+
+    .gold-gradient-text {
+      background: linear-gradient(135deg, #FFF6D6 0%, #F5D061 30%, #D4AF37 60%, #AA7C11 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    /* Diya flame animation */
+    @keyframes diyaFlicker {
+      0%, 100% {
+        transform: scale(1) rotate(-1deg);
+        filter: drop-shadow(0 0 12px rgba(255, 170, 40, 0.95)) drop-shadow(0 0 32px rgba(245, 158, 11, 0.8));
+      }
+      25% {
+        transform: scale(1.08, 0.94) rotate(2deg);
+        filter: drop-shadow(0 0 16px rgba(255, 195, 60, 1)) drop-shadow(0 0 40px rgba(245, 158, 11, 0.9));
+      }
+      50% {
+        transform: scale(0.96, 1.05) rotate(-2deg);
+        filter: drop-shadow(0 0 14px rgba(255, 160, 30, 0.9)) drop-shadow(0 0 35px rgba(245, 158, 11, 0.75));
+      }
+      75% {
+        transform: scale(1.04, 0.98) rotate(1deg);
+        filter: drop-shadow(0 0 20px rgba(255, 210, 70, 1)) drop-shadow(0 0 45px rgba(245, 158, 11, 0.85));
+      }
+    }
+
+    .flame-active {
+      animation: diyaFlicker 1.6s infinite ease-in-out;
+      transform-origin: bottom center;
+    }
+
+    @keyframes pulseRing {
+      0% { box-shadow: 0 0 0 0 rgba(212, 175, 55, 0.4); }
+      70% { box-shadow: 0 0 0 16px rgba(212, 175, 55, 0); }
+      100% { box-shadow: 0 0 0 0 rgba(212, 175, 55, 0); }
+    }
+    .pulse-diya { animation: pulseRing 2.2s infinite; }
+
+    /* Custom scrollbar */
+    ::-webkit-scrollbar { width: 6px; }
+    ::-webkit-scrollbar-thumb { background: rgba(212, 175, 55, 0.3); border-radius: 999px; }
+  </style>
+</head>
+<body class="festive-bg min-h-screen flex flex-col justify-between relative selection:bg-amber-900 selection:text-amber-100">
+
+  <!-- Interactive Sparkler & Fireworks Canvas -->
+  <canvas id="sparklerCanvas" class="fixed inset-0 pointer-events-none z-10"></canvas>
+
+  <!-- Top Navigation & Controls Bar -->
+  <header class="relative z-20 w-full max-w-6xl mx-auto px-4 sm:px-6 py-5 flex justify-between items-center border-b border-amber-500/15 backdrop-blur-sm">
+    <div class="flex items-center space-x-2">
+      <span class="w-2.5 h-2.5 rounded-full bg-amber-400 animate-ping"></span>
+      <span class="text-xs uppercase tracking-[0.25em] text-amber-200/80 font-semibold font-cinzel">
+        Diwali Edition &bull; Deepavali
+      </span>
+    </div>
+
+    <div class="flex items-center space-x-2 sm:space-x-3">
+      <!-- Sparkler Trail Toggle -->
+      <button id="sparklerToolBtn" class="px-3 py-1.5 rounded-full text-xs font-medium border border-amber-500/30 bg-amber-950/30 hover:bg-amber-500/20 text-amber-200 transition flex items-center space-x-1.5" title="Move your finger/mouse to paint sparks">
+        <i class="fa-solid fa-wand-magic-sparkles text-amber-300"></i>
+        <span class="hidden sm:inline">Phooljhadi: <span id="sparklerStatus" class="text-amber-400 font-semibold">ON</span></span>
+      </button>
+
+      <!-- Ambient Audio Chime Toggle -->
+      <button id="audioToggleBtn" class="px-3 py-1.5 rounded-full text-xs font-medium border border-amber-500/30 bg-amber-950/30 hover:bg-amber-500/20 text-amber-200 transition flex items-center space-x-1.5" title="Harmonious sitar synth chime">
+        <i id="audioIcon" class="fa-solid fa-volume-xmark text-amber-300"></i>
+        <span class="hidden md:inline" id="audioLabel">Chimes: Off</span>
+      </button>
+
+      <!-- Share Button -->
+    </div>
+  </header>
+
+  <!-- Main Experience -->
+  <main class="relative z-20 flex-grow flex flex-col items-center justify-center px-4 py-8 max-w-5xl mx-auto w-full">
+
+    <!-- Header & Sanskrit Invocation -->
+    <div class="text-center space-y-2 mb-6">
+      <div class="inline-flex items-center space-x-2 px-3 py-1 rounded-full bg-amber-900/30 border border-amber-500/30 text-[11px] uppercase tracking-widest text-amber-300">
+        <span>तमसो मा ज्योतिर्गमय &bull; Lead us from Darkness to Light</span>
+      </div>
+      <h1 class="font-cinzel text-4xl sm:text-5xl md:text-6xl font-extrabold gold-gradient-text tracking-wide drop-shadow-md">
+        Happy Diwali
+      </h1> 
+      <p class="text-sm md:text-base text-amber-100/80 font-normal tracking-wide max-w-xl mx-auto">
+        A celebration of brilliance, unity, and flourishing new beginnings.
+      </p>
+    </div>
+
+    <!-- Interactive Ceremony: The 5 Auspicious Diyas -->
+    <section class="w-full max-w-4xl bg-gradient-to-b from-[#0e162e]/70 to-[#070d1e]/85 border border-amber-500/25 rounded-3xl p-5 sm:p-8 backdrop-blur-md shadow-2xl relative overflow-hidden mb-8">
+      
+      <!-- Ambient Rangoli Glow behind Diyas -->
+      <div class="absolute -top-24 left-1/2 -translate-x-1/2 w-96 h-96 bg-amber-500/10 rounded-full blur-3xl pointer-events-none"></div>
+
+      <div class="flex flex-col sm:flex-row items-center justify-between gap-2 mb-6">
+        <div>
+          <h2 class="font-cinzel text-base sm:text-lg text-amber-200 font-bold flex items-center space-x-2">
+            <i class="fa-solid fa-fire-flame-curved text-amber-400"></i>
+            <span>The Ceremony of Lights (पंच दीपक)</span>
+          </h2>
+          <p class="text-xs text-amber-200/60 mt-0.5">
+            Click each sacred diya to invoke its auspicious blessing.
+          </p>
+        </div>
+
+        <div class="flex items-center space-x-3">
+          <!-- Light All / Quick Button -->
+          <button id="lightAllBtn" class="px-3 py-1 rounded-full text-xs font-semibold bg-amber-500/20 hover:bg-amber-500/30 border border-amber-400/40 text-amber-200 transition">
+            ✨ Light All
+          </button>
+          <!-- Status Tracker -->
+          <div class="text-xs px-2.5 py-1 rounded-full bg-amber-950/60 border border-amber-500/30 font-semibold text-amber-300">
+            <span id="diyasLitCount">0</span> / 5 Lit
+          </div>
+        </div>
+      </div>
+
+      <!-- The 5 Diya Row -->
+      <div class="grid grid-cols-2 sm:grid-cols-5 gap-4 sm:gap-3 py-2 items-end justify-center">
+        
+        <!-- Diya 1: Wisdom -->
+        <div class="diya-item flex flex-col items-center cursor-pointer group" data-index="0" data-blessing="Wisdom & Sharp Vision" data-sanskrit="ज्ञानम् (Gyan)">
+          <div class="diya-target relative w-24 h-24 flex items-center justify-center p-2 rounded-2xl transition-all duration-300 group-hover:scale-105">
+            <svg class="diya-svg w-full h-full filter drop-shadow-md overflow-visible" viewBox="0 0 160 140">
+              <!-- Flame -->
+              <g class="diya-flame transition-all duration-500 opacity-0 scale-50 origin-bottom transform translate-y-2">
+                <circle cx="80" cy="45" r="28" fill="#F59E0B" opacity="0.3" />
+                <path class="flame-active" d="M80 10 C70 32 64 50 72 62 C76 70 84 70 88 62 C96 50 90 32 80 10 Z" fill="url(#flameGradCommon)" />
+                <path d="M80 38 C77 46 77 55 80 60 C83 55 83 46 80 38 Z" fill="#FFFBEB" />
+              </g>
+              <!-- Wick -->
+              <path d="M78 60 Q80 65 82 70" stroke="#3E1A00" stroke-width="2.5" fill="none"/>
+              <!-- Base Bowl -->
+              <ellipse cx="80" cy="115" rx="38" ry="8" fill="#030712" opacity="0.6"/>
+              <path d="M25 72 C30 102 60 115 80 115 C100 115 130 102 135 72 C115 82 45 82 25 72 Z" fill="url(#brassCommon)" stroke="#F5D061" stroke-width="1"/>
+              <ellipse cx="80" cy="72" rx="55" ry="14" fill="#6B3410" stroke="#F5D061" stroke-width="2"/>
+            </svg>
+          </div>
+          <span class="diya-title text-xs font-semibold text-amber-200/70 group-hover:text-amber-200 mt-1 transition">Wisdom</span>
+          <span class="diya-state text-[10px] text-amber-400/50">Unlit</span>
+        </div>
+
+        <!-- Diya 2: Prosperity -->
+        <div class="diya-item flex flex-col items-center cursor-pointer group" data-index="1" data-blessing="Wealth, Growth & Abundance" data-sanskrit="समृद्धि (Samriddhi)">
+          <div class="diya-target relative w-24 h-24 flex items-center justify-center p-2 rounded-2xl transition-all duration-300 group-hover:scale-105">
+            <svg class="diya-svg w-full h-full filter drop-shadow-md overflow-visible" viewBox="0 0 160 140">
+              <g class="diya-flame transition-all duration-500 opacity-0 scale-50 origin-bottom transform translate-y-2">
+                <circle cx="80" cy="45" r="28" fill="#F59E0B" opacity="0.3" />
+                <path class="flame-active" d="M80 10 C70 32 64 50 72 62 C76 70 84 70 88 62 C96 50 90 32 80 10 Z" fill="url(#flameGradCommon)" />
+                <path d="M80 38 C77 46 77 55 80 60 C83 55 83 46 80 38 Z" fill="#FFFBEB" />
+              </g>
+              <path d="M78 60 Q80 65 82 70" stroke="#3E1A00" stroke-width="2.5" fill="none"/>
+              <ellipse cx="80" cy="115" rx="38" ry="8" fill="#030712" opacity="0.6"/>
+              <path d="M25 72 C30 102 60 115 80 115 C100 115 130 102 135 72 C115 82 45 82 25 72 Z" fill="url(#brassCommon)" stroke="#F5D061" stroke-width="1"/>
+              <ellipse cx="80" cy="72" rx="55" ry="14" fill="#6B3410" stroke="#F5D061" stroke-width="2"/>
+            </svg>
+          </div>
+          <span class="diya-title text-xs font-semibold text-amber-200/70 group-hover:text-amber-200 mt-1 transition">Prosperity</span>
+          <span class="diya-state text-[10px] text-amber-400/50">Unlit</span>
+        </div>
+
+        <!-- Diya 3: Grand Central Diya (Leadership & Triumph) -->
+        <div class="diya-item col-span-2 sm:col-span-1 flex flex-col items-center cursor-pointer group scale-110 -translate-y-2" data-index="2" data-blessing="Leadership, Victory & Triumph" data-sanskrit="विजय (Vijaya)">
+          <div class="diya-target relative w-28 h-28 flex items-center justify-center p-2 rounded-2xl transition-all duration-300 group-hover:scale-105 border border-amber-400/20 bg-amber-500/5 pulse-diya">
+            <svg class="diya-svg w-full h-full filter drop-shadow-xl overflow-visible" viewBox="0 0 160 140">
+              <g class="diya-flame transition-all duration-500 opacity-0 scale-50 origin-bottom transform translate-y-2">
+                <circle cx="80" cy="40" r="35" fill="#F59E0B" opacity="0.45" />
+                <path class="flame-active" d="M80 5 C68 30 60 50 70 65 C75 73 85 73 90 65 C100 50 92 30 80 5 Z" fill="url(#flameGradGrand)" />
+                <path d="M80 34 C76 44 76 56 80 62 C84 56 84 44 80 34 Z" fill="#FFFBEB" />
+              </g>
+              <path d="M78 62 Q80 67 82 72" stroke="#3E1A00" stroke-width="3" fill="none"/>
+              <ellipse cx="80" cy="118" rx="42" ry="9" fill="#030712" opacity="0.7"/>
+              <path d="M20 70 C25 106 58 120 80 120 C102 120 135 106 140 70 C120 82 40 82 20 70 Z" fill="url(#brassCommon)" stroke="#FFF2B2" stroke-width="1.4"/>
+              <ellipse cx="80" cy="70" rx="60" ry="15" fill="#78350F" stroke="#FFF2B2" stroke-width="2.5"/>
+            </svg>
+          </div>
+          <span class="diya-title text-xs font-bold text-amber-300 mt-1">Triumph</span>
+          <span class="diya-state text-[10px] text-amber-400">Grand Light</span>
+        </div>
+
+        <!-- Diya 4: Health & Joy -->
+        <div class="diya-item flex flex-col items-center cursor-pointer group" data-index="3" data-blessing="Vibrant Health & Vitality" data-sanskrit="आरोग्यम् (Arogyam)">
+          <div class="diya-target relative w-24 h-24 flex items-center justify-center p-2 rounded-2xl transition-all duration-300 group-hover:scale-105">
+            <svg class="diya-svg w-full h-full filter drop-shadow-md overflow-visible" viewBox="0 0 160 140">
+              <g class="diya-flame transition-all duration-500 opacity-0 scale-50 origin-bottom transform translate-y-2">
+                <circle cx="80" cy="45" r="28" fill="#F59E0B" opacity="0.3" />
+                <path class="flame-active" d="M80 10 C70 32 64 50 72 62 C76 70 84 70 88 62 C96 50 90 32 80 10 Z" fill="url(#flameGradCommon)" />
+                <path d="M80 38 C77 46 77 55 80 60 C83 55 83 46 80 38 Z" fill="#FFFBEB" />
+              </g>
+              <path d="M78 60 Q80 65 82 70" stroke="#3E1A00" stroke-width="2.5" fill="none"/>
+              <ellipse cx="80" cy="115" rx="38" ry="8" fill="#030712" opacity="0.6"/>
+              <path d="M25 72 C30 102 60 115 80 115 C100 115 130 102 135 72 C115 82 45 82 25 72 Z" fill="url(#brassCommon)" stroke="#F5D061" stroke-width="1"/>
+              <ellipse cx="80" cy="72" rx="55" ry="14" fill="#6B3410" stroke="#F5D061" stroke-width="2"/>
+            </svg>
+          </div>
+          <span class="diya-title text-xs font-semibold text-amber-200/70 group-hover:text-amber-200 mt-1 transition">Good Health</span>
+          <span class="diya-state text-[10px] text-amber-400/50">Unlit</span>
+        </div>
+
+        <!-- Diya 5: Peace & Harmony -->
+        <div class="diya-item flex flex-col items-center cursor-pointer group" data-index="4" data-blessing="Peace, Serenity & Harmony" data-sanskrit="शान्तिः (Shanti)">
+          <div class="diya-target relative w-24 h-24 flex items-center justify-center p-2 rounded-2xl transition-all duration-300 group-hover:scale-105">
+            <svg class="diya-svg w-full h-full filter drop-shadow-md overflow-visible" viewBox="0 0 160 140">
+              <g class="diya-flame transition-all duration-500 opacity-0 scale-50 origin-bottom transform translate-y-2">
+                <circle cx="80" cy="45" r="28" fill="#F59E0B" opacity="0.3" />
+                <path class="flame-active" d="M80 10 C70 32 64 50 72 62 C76 70 84 70 88 62 C96 50 90 32 80 10 Z" fill="url(#flameGradCommon)" />
+                <path d="M80 38 C77 46 77 55 80 60 C83 55 83 46 80 38 Z" fill="#FFFBEB" />
+              </g>
+              <path d="M78 60 Q80 65 82 70" stroke="#3E1A00" stroke-width="2.5" fill="none"/>
+              <ellipse cx="80" cy="115" rx="38" ry="8" fill="#030712" opacity="0.6"/>
+              <path d="M25 72 C30 102 60 115 80 115 C100 115 130 102 135 72 C115 82 45 82 25 72 Z" fill="url(#brassCommon)" stroke="#F5D061" stroke-width="1"/>
+              <ellipse cx="80" cy="72" rx="55" ry="14" fill="#6B3410" stroke="#F5D061" stroke-width="2"/>
+            </svg>
+          </div>
+          <span class="diya-title text-xs font-semibold text-amber-200/70 group-hover:text-amber-200 mt-1 transition">Harmony</span>
+          <span class="diya-state text-[10px] text-amber-400/50">Unlit</span>
+        </div>
+
+      </div>
+
+      <!-- Live Blessing Banner -->
+      <div id="blessingBanner" class="mt-4 pt-3 border-t border-amber-500/20 text-center transition-all duration-500 min-h-[44px] flex items-center justify-center">
+        <span class="text-xs sm:text-sm text-amber-300 font-medium tracking-wide">
+          <i class="fa-solid fa-sparkles text-amber-400 mr-1.5"></i>
+          Tap any diya or light all to invoke the five festive blessings.
+        </span>
+      </div>
+
+      <!-- Shared SVG Gradients Defs -->
+      <svg class="hidden">
+        <defs>
+          <linearGradient id="brassCommon" x1="0" y1="0" x2="1" y2="1">
+            <stop offset="0%" stop-color="#FDE047"/>
+            <stop offset="45%" stop-color="#CA8A04"/>
+            <stop offset="100%" stop-color="#713F12"/>
+          </linearGradient>
+          <radialGradient id="flameGradCommon" cx="50%" cy="80%" r="75%">
+            <stop offset="0%" stop-color="#FFFFFF"/>
+            <stop offset="25%" stop-color="#FEF08A"/>
+            <stop offset="60%" stop-color="#F59E0B"/>
+            <stop offset="90%" stop-color="#DC2626"/>
+          </radialGradient>
+          <radialGradient id="flameGradGrand" cx="50%" cy="80%" r="80%">
+            <stop offset="0%" stop-color="#FFFFFF"/>
+            <stop offset="20%" stop-color="#FEF08A"/>
+            <stop offset="55%" stop-color="#F97316"/>
+            <stop offset="85%" stop-color="#DC2626"/>
+            <stop offset="100%" stop-color="#991B1B"/>
+          </radialGradient>
+        </defs>
+      </svg>
+    </section>
+
+    <!-- Executive Greeting Card & Signature -->
+    <section id="executiveCard" class="w-full max-w-2xl text-center mb-8">
+      <div class="relative p-7 sm:p-9 rounded-3xl bg-gradient-to-b from-[#101b38]/95 to-[#080d21]/95 border border-amber-400/35 backdrop-blur-xl shadow-2xl overflow-hidden">
+        
+        <!-- Corner filigree marks -->
+        <span class="absolute top-3 left-4 text-amber-500/30 text-xs font-serif-luxury">&#9884;</span>
+        <span class="absolute top-3 right-4 text-amber-500/30 text-xs font-serif-luxury">&#9884;</span>
+        <span class="absolute bottom-3 left-4 text-amber-500/30 text-xs font-serif-luxury">&#9884;</span>
+        <span class="absolute bottom-3 right-4 text-amber-500/30 text-xs font-serif-luxury">&#9884;</span>
+
+        <!-- Festive Quote -->
+        <div class="space-y-4">
+          <p class="font-serif-luxury text-xl sm:text-2xl md:text-3xl text-amber-50 leading-relaxed tracking-wide italic font-medium">
+            “Wishing you and your esteemed family abundant joy, enduring prosperity, and triumphant success this festive season. May the divine lights illuminate your personal and professional endeavors.”
+          </p>
+
+          <div class="w-20 h-0.5 bg-gradient-to-r from-transparent via-amber-400 to-transparent mx-auto"></div>
+
+          <!-- Formal Sign-off -->
+          <div class="pt-2">
+            <span class="text-xs uppercase tracking-[0.2em] text-amber-300/70 font-semibold block mb-1">
+              Warm Diwali Greetings & Respects,
+            </span>
+            <span class="font-cinzel text-2xl sm:text-3xl font-bold gold-gradient-text tracking-wider">
+              Avijit Raj Khare
+            </span>
+          </div>
+        </div>
+
+        <!-- Quick Action Pill Inside Greeting -->
+        <div class="mt-6 pt-5 border-t border-amber-500/20 flex flex-wrap items-center justify-center gap-3">
+          <button id="anarFountainBtn" class="px-4 py-2 rounded-full text-xs font-bold bg-gradient-to-r from-amber-500 to-yellow-600 hover:from-amber-400 hover:to-yellow-500 text-gray-950 shadow-lg shadow-amber-500/25 transition transform active:scale-95 flex items-center space-x-2">
+            <i class="fa-solid fa-volcano"></i>
+            <span>Ignite Celebratory Anar</span>
+          </button>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- Fun & Creative Interactive Feature: The Festive Mithai Treat Box -->
+    <section class="w-full max-w-2xl bg-[#091024]/80 border border-amber-500/20 rounded-2xl p-5 sm:p-6 backdrop-blur-md">
+      <div class="text-center mb-4">
+        <span class="text-[11px] uppercase tracking-widest text-amber-300/70 font-bold block">
+          A Festive Courtesy &bull; शुभ मिष्ठान
+        </span>
+        <h3 class="font-cinzel text-base sm:text-lg text-amber-100 font-semibold mt-0.5">
+          Pick a Festive Sweet for Good Fortune
+        </h3>
+        <p class="text-xs text-amber-200/60">
+          Tap your favorite sweet to unpack an auspicious festive fortune.
+        </p>
+      </div>
+
+      <!-- 4 Sweets Grid -->
+      <div class="grid grid-cols-2 sm:grid-cols-4 gap-3">
+        
+        <!-- Kaju Katli -->
+        <button class="mithai-btn p-3 rounded-xl bg-gradient-to-b from-[#142042] to-[#0a1128] border border-amber-400/20 hover:border-amber-400/60 hover:bg-amber-500/10 transition-all flex flex-col items-center group text-center"
+          data-title="Kaju Katli (काजू कतली)"
+          data-desc="May your career & visions be as refined, sharp, and timeless as silver-leaf diamond cuts!">
+          <div class="w-10 h-10 rounded-lg bg-gray-200 border border-amber-300/40 rotate-45 transform group-hover:rotate-[55deg] transition duration-300 shadow-md flex items-center justify-center my-2">
+            <span class="text-[9px] -rotate-45 text-gray-700 font-bold tracking-tighter">SILVER</span>
+          </div>
+          <span class="text-xs font-semibold text-amber-200 mt-1">Kaju Katli</span>
+          <span class="text-[10px] text-amber-300/50">Excellence</span>
+        </button>
+
+        <!-- Motichoor Ladoo -->
+        <button class="mithai-btn p-3 rounded-xl bg-gradient-to-b from-[#142042] to-[#0a1128] border border-amber-400/20 hover:border-amber-400/60 hover:bg-amber-500/10 transition-all flex flex-col items-center group text-center"
+          data-title="Motichoor Ladoo (मोतीचूर लड्डू)"
+          data-desc="May millions of tiny positive moments combine into monumental, golden milestones for you!">
+          <div class="w-10 h-10 rounded-full bg-gradient-to-tr from-amber-600 to-yellow-400 border border-amber-300/60 group-hover:scale-110 transition duration-300 shadow-md my-2 flex items-center justify-center text-xs">
+            ✨
+          </div>
+          <span class="text-xs font-semibold text-amber-200 mt-1">Motichoor Ladoo</span>
+          <span class="text-[10px] text-amber-300/50">Success</span>
+        </button>
+
+        <!-- Gulab Jamun -->
+        <button class="mithai-btn p-3 rounded-xl bg-gradient-to-b from-[#142042] to-[#0a1128] border border-amber-400/20 hover:border-amber-400/60 hover:bg-amber-500/10 transition-all flex flex-col items-center group text-center"
+          data-title="Gulab Jamun (गुलाब जामुन)"
+          data-desc="May all your partnerships and relationships be infused with unmatched warmth and sweetness!">
+          <div class="w-10 h-10 rounded-full bg-gradient-to-tr from-amber-950 via-amber-900 to-amber-800 border border-amber-400/30 group-hover:scale-110 transition duration-300 shadow-md my-2 flex items-center justify-center text-xs">
+            🍯
+          </div>
+          <span class="text-xs font-semibold text-amber-200 mt-1">Gulab Jamun</span>
+          <span class="text-[10px] text-amber-300/50">Warmth</span>
+        </button>
+
+        <!-- Besan Ladoo -->
+        <button class="mithai-btn p-3 rounded-xl bg-gradient-to-b from-[#142042] to-[#0a1128] border border-amber-400/20 hover:border-amber-400/60 hover:bg-amber-500/10 transition-all flex flex-col items-center group text-center"
+          data-title="Besan Ladoo (बेसन लड्डू)"
+          data-desc="May your foundations remain solid, authentic, and rich with wisdom throughout the new fiscal year!">
+          <div class="w-10 h-10 rounded-full bg-gradient-to-tr from-yellow-600 to-amber-300 border border-yellow-200/50 group-hover:scale-110 transition duration-300 shadow-md my-2 flex items-center justify-center text-xs">
+            🌟
+          </div>
+          <span class="text-xs font-semibold text-amber-200 mt-1">Besan Ladoo</span>
+          <span class="text-[10px] text-amber-300/50">Stability</span>
+        </button>
+
+      </div>
+
+      <!-- Mithai Fortune Display Box -->
+      <div id="mithaiDisplay" class="mt-4 p-3.5 rounded-xl bg-amber-950/30 border border-amber-500/30 text-center transition-all duration-300">
+        <span class="text-xs text-amber-200/80 italic">
+          Click any festive sweet above to enjoy its auspicious thought.
+        </span>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- Notification Toast -->
+  <div id="toast" class="fixed bottom-6 left-1/2 -translate-x-1/2 transform scale-90 opacity-0 pointer-events-none transition-all duration-300 z-50 px-5 py-2.5 rounded-full bg-amber-900/95 border border-amber-400/60 text-amber-100 text-xs font-medium tracking-wide shadow-2xl backdrop-blur-md flex items-center space-x-2">
+    <i class="fa-solid fa-circle-check text-amber-400"></i>
+    <span id="toastMsg">Greetings ready</span>
+  </div>
+
+  <!-- Footer -->
+  <footer class="relative z-20 w-full py-5 text-center text-xs text-amber-300/40 tracking-wider border-t border-amber-500/10">
+    <span>Deepavali Greetings &bull; Radiance &bull; Prosperity &bull; Avijit Raj Khare</span>
+  </footer>
+
+  <!-- Application Script -->
+  <script>
+    /* ==========================================================
+       1. CANVAS SPARKLE & PHOOLJHADI ENGINE
+    ========================================================== */
+    const canvas = document.getElementById('sparklerCanvas');
+    const ctx = canvas.getContext('2d');
+    let width = (canvas.width = window.innerWidth);
+    let height = (canvas.height = window.innerHeight);
+
+    window.addEventListener('resize', () => {
+      width = canvas.width = window.innerWidth;
+      height = canvas.height = window.innerHeight;
+    });
+
+    let sparks = [];
+    let isSparklerActive = true;
+
+    class Spark {
+      constructor(x, y, vx, vy, color, size, decay, gravity = 0.08) {
+        this.x = x;
+        this.y = y;
+        this.vx = vx;
+        this.vy = vy;
+        this.color = color;
+        this.size = size;
+        this.alpha = 1;
+        this.decay = decay;
+        this.gravity = gravity;
+      }
+      update() {
+        this.x += this.vx;
+        this.y += this.vy;
+        this.vy += this.gravity;
+        this.vx *= 0.98;
+        this.alpha -= this.decay;
+      }
+      draw(c) {
+        c.save();
+        c.globalAlpha = Math.max(0, this.alpha);
+        c.beginPath();
+        c.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+        c.fillStyle = this.color;
+        c.shadowBlur = 8;
+        c.shadowColor = this.color;
+        c.fill();
+        c.restore();
+      }
+    }
+
+    // Add continuous phooljhadi burst at coordinates
+    function emitPhooljhadiSparks(x, y, count = 4) {
+      const colors = ['#FFFBEB', '#FDE047', '#F59E0B', '#F97316', '#FBBF24'];
+      for (let i = 0; i < count; i++) {
+        const angle = Math.random() * Math.PI * 2;
+        const speed = Math.random() * 3.5 + 0.8;
+        sparks.push(
+          new Spark(
+            x,
+            y,
+            Math.cos(angle) * speed,
+            Math.sin(angle) * speed,
+            colors[Math.floor(Math.random() * colors.length)],
+            Math.random() * 2 + 1,
+            Math.random() * 0.03 + 0.02,
+            0.05
+          )
+        );
+      }
+    }
+
+    // Interactive pointer phooljhadi sparkler
+    window.addEventListener('mousemove', (e) => {
+      if (isSparklerActive) {
+        emitPhooljhadiSparks(e.clientX, e.clientY, 3);
+      }
+    });
+
+    window.addEventListener('touchmove', (e) => {
+      if (isSparklerActive && e.touches[0]) {
+        emitPhooljhadiSparks(e.touches[0].clientX, e.touches[0].clientY, 3);
+      }
+    }, { passive: true });
+
+    // Render loop
+    function renderSparks() {
+      ctx.clearRect(0, 0, width, height);
+      for (let i = sparks.length - 1; i >= 0; i--) {
+        const s = sparks[i];
+        s.update();
+        s.draw(ctx);
+        if (s.alpha <= 0) {
+          sparks.splice(i, 1);
+        }
+      }
+      requestAnimationFrame(renderSparks);
+    }
+    renderSparks();
+
+    // Toggle sparkler tool
+    const sparklerToolBtn = document.getElementById('sparklerToolBtn');
+    const sparklerStatus = document.getElementById('sparklerStatus');
+    sparklerToolBtn.addEventListener('click', (e) => {
+      e.stopPropagation();
+      isSparklerActive = !isSparklerActive;
+      sparklerStatus.textContent = isSparklerActive ? 'ON' : 'OFF';
+      sparklerStatus.className = isSparklerActive ? 'text-amber-400 font-semibold' : 'text-gray-400 font-semibold';
+      showToast(isSparklerActive ? "Phooljhadi Sparkler Enabled — move cursor" : "Phooljhadi paused");
+    });
+
+    /* ==========================================================
+       2. WEB AUDIO SYNTHESIZER (Festive Tanpura & Bells)
+    ========================================================== */
+    let audioCtx = null;
+    let isAudioEnabled = false;
+
+    function getAudioContext() {
+      if (!audioCtx) {
+        const AudioContext = window.AudioContext || window.webkitAudioContext;
+        audioCtx = new AudioContext();
+      }
+      if (audioCtx.state === 'suspended') {
+        audioCtx.resume();
+      }
+      return audioCtx;
+    }
+
+    // Play synthesized warm brass temple bell chime
+    function playChime(freq = 523.25, duration = 1.2) {
+      if (!isAudioEnabled) return;
+      try {
+        const ctx = getAudioContext();
+        const osc = ctx.createOscillator();
+        const gain = ctx.createGain();
+
+        osc.type = 'sine';
+        osc.frequency.setValueAtTime(freq, ctx.currentTime);
+
+        gain.gain.setValueAtTime(0.2, ctx.currentTime);
+        gain.gain.exponentialRampToValueAtTime(0.0001, ctx.currentTime + duration);
+
+        osc.connect(gain);
+        gain.connect(ctx.destination);
+
+        osc.start();
+        osc.stop(ctx.currentTime + duration);
+      } catch (err) {
+        console.warn('Audio note prevented:', err);
+      }
+    }
+
+    function playAuspiciousChord(step = 0) {
+      if (!isAudioEnabled) return;
+      // Traditional Raga Bhupali Scale frequencies (C, D, E, G, A)
+      const scale = [261.63, 293.66, 329.63, 392.00, 440.00, 523.25];
+      const baseFreq = scale[step % scale.length];
+      playChime(baseFreq, 1.4);
+      setTimeout(() => playChime(baseFreq * 1.5, 1.2), 80);
+    }
+
+    const audioToggleBtn = document.getElementById('audioToggleBtn');
+    const audioIcon = document.getElementById('audioIcon');
+    const audioLabel = document.getElementById('audioLabel');
+
+    audioToggleBtn.addEventListener('click', (e) => {
+      e.stopPropagation();
+      getAudioContext();
+      isAudioEnabled = !isAudioEnabled;
+      if (isAudioEnabled) {
+        audioIcon.className = "fa-solid fa-volume-high text-amber-300";
+        audioLabel.textContent = "Chimes: On";
+        playAuspiciousChord(2);
+        showToast("Harmonious festive chimes enabled");
+      } else {
+        audioIcon.className = "fa-solid fa-volume-xmark text-amber-300";
+        audioLabel.textContent = "Chimes: Off";
+        showToast("Chimes muted");
+      }
+    });
+
+    /* ==========================================================
+       3. FIVE AUSPICIOUS DIYAS CEREMONY
+    ========================================================== */
+    const diyaItems = document.querySelectorAll('.diya-item');
+    const diyasLitCount = document.getElementById('diyasLitCount');
+    const blessingBanner = document.getElementById('blessingBanner');
+    const lightAllBtn = document.getElementById('lightAllBtn');
+
+    let litState = [false, false, false, false, false];
+
+    function lightSingleDiya(index, triggerCelebration = true) {
+      if (litState[index]) return;
+      litState[index] = true;
+
+      const item = diyaItems[index];
+      const flame = item.querySelector('.diya-flame');
+      const stateLabel = item.querySelector('.diya-state');
+      const blessing = item.getAttribute('data-blessing');
+      const sanskrit = item.getAttribute('data-sanskrit');
+
+      // Ignite animation
+      flame.classList.remove('opacity-0', 'scale-50', 'translate-y-2');
+      flame.classList.add('opacity-100', 'scale-100', 'translate-y-0');
+      stateLabel.textContent = 'Lit ✨';
+      stateLabel.classList.replace('text-amber-400/50', 'text-amber-300');
+      stateLabel.classList.add('font-semibold');
+
+      // Audio note
+      playAuspiciousChord(index);
+
+      // Fireworks at Diya location
+      const rect = item.getBoundingClientRect();
+      const x = rect.left + rect.width / 2;
+      const y = rect.top + rect.height * 0.3;
+      emitPhooljhadiSparks(x, y, 25);
+
+      // Update banner
+      blessingBanner.innerHTML = `
+        <span class="text-amber-200 text-xs sm:text-sm font-medium animate-pulse">
+          <strong class="text-amber-300 font-cinzel">${sanskrit}:</strong> ${blessing}
+        </span>
+      `;
+
+      // Update Count
+      const count = litState.filter(Boolean).length;
+      diyasLitCount.textContent = count;
+
+      // When all 5 are lit: Grand Celebration!
+      if (count === 5 && triggerCelebration) {
+        grandDiwaliCelebration();
+      }
+    }
+
+    diyaItems.forEach((item, idx) => {
+      item.addEventListener('click', () => {
+        if (!litState[idx]) {
+          lightSingleDiya(idx);
+        } else {
+          // Re-burst sparkler
+          const rect = item.getBoundingClientRect();
+          emitPhooljhadiSparks(rect.left + rect.width / 2, rect.top + rect.height * 0.3, 18);
+          playAuspiciousChord(idx);
+        }
+      });
+    });
+
+    lightAllBtn.addEventListener('click', (e) => {
+      e.stopPropagation();
+      diyaItems.forEach((_, idx) => {
+        setTimeout(() => lightSingleDiya(idx, idx === 4), idx * 220);
+      });
+    });
+
+    function grandDiwaliCelebration() {
+      blessingBanner.innerHTML = `
+        <span class="text-amber-300 text-sm font-bold tracking-wider font-cinzel animate-bounce">
+          ✨ All 5 Auspicious Lights Awakened &bull; Shubh Deepavali! ✨
+        </span>
+      `;
+
+      if (typeof confetti === 'function') {
+        confetti({
+          particleCount: 60,
+          spread: 70,
+          origin: { y: 0.6 },
+          colors: ['#F5D061', '#D4AF37', '#FFFBEB', '#F97316', '#EF4444']
+        });
+      }
+      showToast("All five sacred diyas are glowing bright!");
+    }
+
+    /* ==========================================================
+       4. CELEBRATORY ANAR FOUNTAIN & FIRECRACKER
+    ========================================================== */
+    const anarFountainBtn = document.getElementById('anarFountainBtn');
+
+    function launchAnarFountain() {
+      // Fountain of sparks from the bottom center
+      const startX = window.innerWidth / 2;
+      const startY = window.innerHeight * 0.75;
+
+      let count = 0;
+      const interval = setInterval(() => {
+        for (let i = 0; i < 12; i++) {
+          const angle = -Math.PI / 2 + (Math.random() - 0.5) * 0.7;
+          const speed = Math.random() * 8 + 4;
+          sparks.push(
+            new Spark(
+              startX + (Math.random() - 0.5) * 40,
+              startY,
+              Math.cos(angle) * speed,
+              Math.sin(angle) * speed,
+              ['#FFFBEB', '#FDE047', '#F59E0B', '#FB923C'][Math.floor(Math.random() * 4)],
+              Math.random() * 2.5 + 1.2,
+              0.025,
+              0.16
+            )
+          );
+        }
+        playChime(600 + Math.random() * 300, 0.15);
+        count++;
+        if (count > 25) {
+          clearInterval(interval);
+          if (typeof confetti === 'function') {
+            confetti({
+              particleCount: 50,
+              spread: 100,
+              origin: { y: 0.4 },
+              colors: ['#FCD34D', '#F59E0B', '#EF4444']
+            });
+          }
+        }
+      }, 50);
+
+      showToast("Celebratory eco-friendly Anar ignited!");
+    }
+
+    anarFountainBtn.addEventListener('click', (e) => {
+      e.stopPropagation();
+      launchAnarFountain();
+    });
+
+    /* ==========================================================
+       5. FESTIVE MITHAI BOX TREAT INTERACTION
+    ========================================================== */
+    const mithaiBtns = document.querySelectorAll('.mithai-btn');
+    const mithaiDisplay = document.getElementById('mithaiDisplay');
+
+    mithaiBtns.forEach(btn => {
+      btn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        const title = btn.getAttribute('data-title');
+        const desc = btn.getAttribute('data-desc');
+
+        // Play gentle chime
+        playChime(587.33, 0.6);
+
+        // Sparkle burst around button
+        const rect = btn.getBoundingClientRect();
+        emitPhooljhadiSparks(rect.left + rect.width / 2, rect.top + rect.height / 2, 16);
+
+        // Render card
+        mithaiDisplay.innerHTML = `
+          <div class="animate-fadeIn">
+            <h4 class="text-xs font-bold text-amber-300 uppercase tracking-widest font-cinzel mb-1">
+              ${title}
+            </h4>
+            <p class="text-xs sm:text-sm text-amber-100 leading-snug">
+              “${desc}”
+            </p>
+          </div>
+        `;
+
+        showToast(`Tasted ${btn.querySelector('span').textContent} for good fortune!`);
+      });
+    });
+
+    /* ==========================================================
+       6. SHARING & WHATSAPP GREETINGS
+    ========================================================== */
+    const shareBtn = document.getElementById('shareBtn');
+    const sendGreetingsBtn = document.getElementById('sendGreetingsBtn');
+    const toast = document.getElementById('toast');
+    const toastMsg = document.getElementById('toastMsg');
+    let toastTimeout = null;
+
+    function showToast(message) {
+      toastMsg.textContent = message;
+      toast.classList.remove('opacity-0', 'scale-90', 'pointer-events-none');
+      toast.classList.add('opacity-100', 'scale-100');
+
+      clearTimeout(toastTimeout);
+      toastTimeout = setTimeout(() => {
+        toast.classList.remove('opacity-100', 'scale-100');
+        toast.classList.add('opacity-0', 'scale-90', 'pointer-events-none');
+      }, 2600);
+    }
+
+    function generateShareText() {
+      return `✨ Happy Diwali! ✨\n\n"Wishing you and your esteemed family abundant joy, enduring prosperity, and triumphant success this festive season. May the divine lights illuminate your personal and professional endeavors."\n\nWarm Diwali Greetings & Respects,\nAvijit Raj Khare\n${window.location.href}`;
+    }
+
+    // WhatsApp Direct Link
+    sendGreetingsBtn.addEventListener('click', (e) => {
+      e.stopPropagation();
+      const text = encodeURIComponent(generateShareText());
+      window.open(`https://api.whatsapp.com/send?text=${text}`, '_blank');
+    });
+
+    // Native Share / Fallback copy
+    shareBtn.addEventListener('click', async (e) => {
+      e.stopPropagation();
+      const shareData = {
+        title: 'Happy Diwali Greetings — Avijit Raj Khare',
+        text: 'Wishing you abundant joy, enduring prosperity, and triumphant success this festive season. Warm greetings from Avijit Raj Khare.',
+        url: window.location.href
+      };
+
+      if (navigator.share) {
+        try {
+          await navigator.share(shareData);
+          showToast("Greeting shared successfully");
+        } catch (err) {
+          if (err.name !== 'AbortError') {
+            copyGreetingLink();
+          }
+        }
+      } else {
+        copyGreetingLink();
+      }
+    });
+
+    function copyGreetingLink() {
+      const copyText = generateShareText();
+      const textarea = document.createElement("textarea");
+      textarea.value = copyText;
+      textarea.style.position = "fixed";
+      textarea.style.left = "-9999px";
+      document.body.appendChild(textarea);
+      textarea.focus();
+      textarea.select();
+
+      try {
+        document.execCommand('copy');
+        showToast("Diwali greeting message copied to clipboard!");
+      } catch (err) {
+        showToast("Unable to copy automatically.");
+      }
+      document.body.removeChild(textarea);
+    }
+  </script>
+</body>
+</html>
